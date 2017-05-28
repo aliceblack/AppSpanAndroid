@@ -30,11 +30,11 @@ public class AppsListFragment extends Fragment {
         //works w frag layout not in main __________________
         //TextView frag=(TextView)getView().findViewById(R.id.frag_text);
         //frag.setText("FFFFFFF frag");
-        ListView listView;
-        String[] months=new String[] {"Janaury","Feb","March","April","May","June","July","August","September","Octomber","November","December"};
-        listView= (ListView)getView().findViewById(R.id.fragment_apps_list);
-        ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1, android.R.id.text1, months);
-        listView.setAdapter(arrayAdapter);
+        //ListView listView;
+        //String[] months=new String[] {"Janaury","Feb","March","April","May","June","July","August","September","Octomber","November","December"};
+        //listView= (ListView)getView().findViewById(R.id.fragment_apps_list);
+        //ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1, android.R.id.text1, months);
+        //listView.setAdapter(arrayAdapter);
         //__________________________________________________________________
 
     }

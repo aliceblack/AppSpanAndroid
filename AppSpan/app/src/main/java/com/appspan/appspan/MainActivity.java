@@ -1,7 +1,7 @@
 package com.appspan.appspan;
-
 import android.app.FragmentTransaction;
 import android.app.usage.UsageStats;
+import android.widget.ListAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             Context context = getApplicationContext();
             UsageStatsManager statsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
             Calendar start = Calendar.getInstance();
-            start.set(Calendar.DAY_OF_MONTH, 23);//80 19 70 28 unA SETT DATA IN DAILY tot 197
+            start.set(Calendar.DAY_OF_MONTH, 23);//80 19 70 28 DAILY tot 197
             start.set(Calendar.MONTH, 4);
             start.set(Calendar.YEAR, 2017);
             Calendar end = Calendar.getInstance();
@@ -92,14 +92,14 @@ public class MainActivity extends AppCompatActivity {
 
             for(int i=0; i<stats.size(); ++i)
             {
-                String name40 = stats.get(i).getPackageName();
-                Long fore40 = stats.get(i).getTotalTimeInForeground();
-                Long last40 = stats.get(i).getLastTimeStamp();
-                fore40=fore40/10/10/10/60;//minuti
-                Log.wtf("app"+i+"name", String.valueOf(name40));
-                Log.wtf("app"+i+"fore minuti"+String.valueOf(name40), String.valueOf(fore40));
-                String ultima=DateFormat.getDateTimeInstance().format(new Date(last40));
-                Log.wtf("app"+i+"last"+String.valueOf(name40), String.valueOf(ultima));
+                String nameTest = stats.get(i).getPackageName();
+                Long foreTest = stats.get(i).getTotalTimeInForeground();
+                Long lastTest = stats.get(i).getLastTimeUsed();
+                foreTest=foreTest/10/10/10/60;//minuti
+                Log.wtf("app"+i+"name", String.valueOf(nameTest));
+                Log.wtf("app"+i+"fore minuti"+String.valueOf(nameTest), String.valueOf(foreTest));
+                String ultima=DateFormat.getDateTimeInstance().format(new Date(lastTest));
+                Log.wtf("app"+i+"last"+String.valueOf(nameTest), String.valueOf(ultima));
             }
 
 
@@ -107,31 +107,21 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //rendering frag verbose-------
-        //FragmentManager fragmentManager = getSupportFragmentManager();
-        //android.support.v4.app.FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        //AppsListFragment appsListFragment= new AppsListFragment();
-        //fragmentTransaction.replace(android.R.id.content, appsListFragment);//correto
-        //fragmentTransaction.replace(R.id.main_container, appsListFragment);//corretto
-        //fragmentTransaction.commit();
-        //--------------------------------
 
-        //rendering frag short
+        //rendering fragment - useless
         AppsListFragment appsListFragment= new AppsListFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.main_container, appsListFragment).commit();
 
-
-        //--------- corretto
-        //ListView listView;
-        //String[] months=new String[] {"Janaury","Feb","March","April","May","June","July","August","September","Octomber","November","December"};
-        //listView= (ListView) findViewById(R.id.apps_list);
-        //ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, android.R.id.text1, months);
-        //listView.setAdapter(arrayAdapter);
-        //----------
-
+        //rendering apps stats
+        ListView listView;
+        listView = (ListView) findViewById(R.id.apps_list);
+        ListAdapter adapter=new StatsAdapter(this, stats);
+        listView.setAdapter(adapter);
 
         //TextView frag=(TextView)findViewById(R.id.main_text);
         //frag.setText("FFFFFFFF main");
+
+
 
     }
 }
