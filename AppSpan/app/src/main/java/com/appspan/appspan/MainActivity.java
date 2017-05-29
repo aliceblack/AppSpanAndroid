@@ -1,6 +1,7 @@
 package com.appspan.appspan;
 import android.app.FragmentTransaction;
 import android.app.usage.UsageStats;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -33,8 +34,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import  android.support.v4.app.FragmentManager;
 import android.widget.TextView;
+import java.util.Collections;
+import android.widget.Spinner;
+import  android.widget.AdapterView;
+import  android.widget.AdapterView.OnItemSelectedListener;
+import android.content.DialogInterface.OnClickListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    String interval="DAILY";
+    List<UsageStats> stats=null;
+
+    public void setInterval(String i) {interval=i;}
+
+    public String getInterval(){return interval;}
+
+    public void setStats(){
+        final UsageStatsManager statsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
+        stats=getStats(statsManager, getInterval());
+    }
+
+    public void renderApps(){
+        ListView listView;
+        listView = (ListView) findViewById(R.id.apps_list);
+        ListAdapter adapter=new StatsAdapter(this, stats);
+        listView.setAdapter(adapter);
+    }
 
     //checks if permission is granted
     //android.permission.PACKAGE_USAGE_STATS is a system-level permission
@@ -70,43 +95,99 @@ public class MainActivity extends AppCompatActivity {
         permissionDialog.show();
     }
 
+    /*The maximum duration that the system keeps this data is as follows:
+    Daily data: 7 days
+    Weekly data: 4 weeks
+    Monthly data: 6 months
+    Yearly data: 2 years*/
+
+    public List<UsageStats> getStats(UsageStatsManager statsManager, String interval){
+
+        Calendar start = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        end.setTimeInMillis(System.currentTimeMillis());
+
+        int intervalSelection = 0;
+        switch (interval) {
+            case "DAILY":
+                start.set(Calendar.DAY_OF_MONTH, -7);
+                intervalSelection = UsageStatsManager.INTERVAL_DAILY;
+                break;
+            case "WEEKLY":
+                start.set(Calendar.MONTH, -1);
+                intervalSelection = UsageStatsManager.INTERVAL_WEEKLY;
+                break;
+            case "MONTHLY":
+                start.set(Calendar.MONTH, -6);
+                intervalSelection = UsageStatsManager.INTERVAL_MONTHLY;
+                break;
+            case "YEARLY":
+                start.set(Calendar.YEAR, -1);
+                intervalSelection = UsageStatsManager.INTERVAL_YEARLY;
+                break;
+            default:
+                start.set(Calendar.DAY_OF_MONTH, -7);
+                intervalSelection = UsageStatsManager.INTERVAL_DAILY;
+                break;
+        }
+
+        List<UsageStats> stats = statsManager.queryUsageStats(intervalSelection, start.getTimeInMillis(), end.getTimeInMillis());
+        Collections.reverse(stats);
+        return stats;
+    }
+
+    public void setButtonListener(Button bt, final String s){
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast=Toast.makeText(MainActivity.this,s,Toast.LENGTH_SHORT);
+                toast.show();
+                setInterval(s);
+                setStats();
+                renderApps();
+            }
+        });
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         int usagePermission=opsUsagePermission();
-        Log.wtf("PERMISSION ON/OFF", String.valueOf(usagePermission));//0 allowed
-        if(usagePermission != 0){
+        Log.wtf("PERMISSION ON/OFF", String.valueOf(usagePermission));
+        if(usagePermission != 0){ //0 permission granted
             askForPermission();
         }
-        //else {//#############
-            Context context = getApplicationContext();
-            UsageStatsManager statsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-            Calendar start = Calendar.getInstance();
-            start.set(Calendar.DAY_OF_MONTH, 23);//80 19 70 28 DAILY tot 197
-            start.set(Calendar.MONTH, 4);
-            start.set(Calendar.YEAR, 2017);
-            Calendar end = Calendar.getInstance();
-            end.setTimeInMillis(System.currentTimeMillis());
-            final List<UsageStats> stats = statsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, start.getTimeInMillis(), end.getTimeInMillis());
 
-            for(int i=0; i<stats.size(); ++i)
-            {
-                String nameTest = stats.get(i).getPackageName();
-                Long foreTest = stats.get(i).getTotalTimeInForeground();
-                Long lastTest = stats.get(i).getLastTimeUsed();
-                foreTest=foreTest/10/10/10/60;//minuti
-                Log.wtf("app"+i+"name", String.valueOf(nameTest));
-                Log.wtf("app"+i+"fore minuti"+String.valueOf(nameTest), String.valueOf(foreTest));
-                String ultima=DateFormat.getDateTimeInstance().format(new Date(lastTest));
-                Log.wtf("app"+i+"last"+String.valueOf(nameTest), String.valueOf(ultima));
-            }
-
-
-        //}//###########
+        Context context = getApplicationContext();
+        final UsageStatsManager statsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+        setStats();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);//before all the findviewbyid
+
+        //_________________________
+        Button btDay = (Button) findViewById(R.id.button_day);
+        Button btWeek = (Button) findViewById(R.id.button_week);
+        Button btMonth = (Button) findViewById(R.id.button_month);
+        Button btYear = (Button) findViewById(R.id.button_year);
+
+        setButtonListener(btDay, "DAILY");
+        setButtonListener(btWeek, "WEEKLY");
+        setButtonListener(btMonth, "MONTHLY");
+        setButtonListener(btYear, "YEARLY");
+
+        //function based on the following code
+        /*btDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast=Toast.makeText(MainActivity.this,"DAILY",Toast.LENGTH_SHORT);
+                toast.show();
+                setInterval("DAILY");
+                setStats();
+                renderApps();
+            }
+        });*/
 
         //rendering fragment - useless
         AppsListFragment appsListFragment= new AppsListFragment();
@@ -120,9 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
         //TextView frag=(TextView)findViewById(R.id.main_text);
         //frag.setText("FFFFFFFF main");
-
-
-
     }
 }
 

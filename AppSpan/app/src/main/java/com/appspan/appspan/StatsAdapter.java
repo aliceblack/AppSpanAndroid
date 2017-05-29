@@ -26,15 +26,26 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View rowView = inflater.inflate(R.layout.row_layout, parent, false);
+        PackageManager packageManager= getContext().getPackageManager();
 
-        String appName = getItem(position).getPackageName();
+
+        String pkgName = getItem(position).getPackageName();
         TextView nameTextView = (TextView)rowView.findViewById(R.id.app_name_row);
+        String appName=null;
+        try {
+            appName = (String) packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (appName==null){appName=pkgName;}
         nameTextView.setText(appName);
 
+
         Long appForeground = getItem(position).getTotalTimeInForeground();
-        appForeground=appForeground/10/10/10/60; //minutes
+        appForeground=appForeground/60000; //milliseconds to minutes
         TextView foregroundTextView = (TextView)rowView.findViewById(R.id.app_foreground_row);
         foregroundTextView.setText(appForeground.toString());
 
@@ -43,16 +54,15 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
         //getLastTimeStamp()
         //Get the end of the time range this UsageStats represents, measured in milliseconds since the epoch.
 
-        Long appLastUsage = getItem(position).getLastTimeUsed();//or timestamp
-        String last= DateFormat.getDateTimeInstance().format(new Date(appLastUsage));//need testing
+        Long appLastUsage = getItem(position).getLastTimeStamp();
+        String last= DateFormat.getDateTimeInstance().format(new Date(appLastUsage));
         TextView lastUsageTextView = (TextView)rowView.findViewById(R.id.app_lastusage_row);
         lastUsageTextView.setText(last);
 
 
-        PackageManager packageManager = getContext().getPackageManager();
         Drawable appIcon=null;
         try {
-            appIcon = packageManager.getApplicationIcon(appName);
+            appIcon = packageManager.getApplicationIcon(pkgName);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
