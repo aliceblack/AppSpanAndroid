@@ -21,7 +21,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(" CREATE TABLE  "+tableName+" ("+column_1+" text primary key, "+column_2+" text ); ");
+        db.execSQL(" CREATE TABLE  "+tableName+" ("+column_1+" text primary key, "+column_2+" long ); ");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public void addLimit(String pkg, String limit){
+    public void addLimit(String pkg, long limit){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column_1, pkg);
@@ -39,25 +39,35 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         Log.wtf("INSERT", String.valueOf(result));
     }
 
-    public Cursor getAll(){ //delete
+    public Cursor getAll(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + tableName , null );
+        cursor.moveToFirst();
+        if(cursor!=null && cursor.getCount()>0)
+            {Log.wtf("DBGETALL ", String.valueOf("got result from db"));}
+        else
+            {Log.wtf("DBGETALL ", String.valueOf("no result from db"));}
         return  cursor;
     }
 
-    public String getLimit(String pkg){//aggiungere controllo su cursore vuoto
+    public Long getLimit(String pkg){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select minutes from " + tableName + " where package='" + pkg + "';", null);
         cursor.moveToFirst();
         int index = cursor.getColumnIndex("minutes");
-        return cursor.getString(index);
+        if(cursor!=null && cursor.getCount()>0){
+            return cursor.getLong(index);
+        }
+        return -1L;
+
     }
 
-    public void updateLimit(String pkg, String limit){
+    public void updateLimit(String pkg, Long limit){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column_1, pkg);
         contentValues.put(column_2, limit);
+        //run time string substitution in place of "?"
         db.update(tableName, contentValues, "package = ?" , new String[] { pkg });
     }
 
@@ -65,4 +75,5 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(tableName, "package = ?" , new String[] { pkg });
     }
+
 }

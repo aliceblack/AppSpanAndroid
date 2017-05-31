@@ -1,10 +1,12 @@
 package com.appspan.appspan;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.usage.UsageStats;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.support.v4.app.FragmentActivity;
@@ -39,6 +41,8 @@ import android.view.ViewGroup;
 import  android.support.v4.app.FragmentManager;
 import android.widget.TextView;
 import java.util.Collections;
+import java.util.Vector;
+import  android.app.ProgressDialog;
 import android.widget.Spinner;
 import  android.widget.AdapterView;
 import  android.widget.AdapterView.OnItemSelectedListener;
@@ -46,11 +50,22 @@ import android.content.DialogInterface.OnClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
+    DataBaseHelper db=null;
+
+    public void setDb() {
+        db = new DataBaseHelper(this);
+    }
+
+    public DataBaseHelper getDb() {
+        return db;
+    }
+
     String interval="Daily";
     List<UsageStats> stats=null;
     TextView mainText=null;
 
     public void updateMainText(){this.mainText.setText(interval+" applications usage");}
+
 
     public void setInterval(String i) {interval=i;}
 
@@ -65,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         updateMainText();
         final ListView listView;
         listView = (ListView) findViewById(R.id.apps_list);
-        final ListAdapter adapter=new StatsAdapter(this, stats);
+        final ListAdapter adapter=new StatsAdapter(this, stats, getDb(), getInterval());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -166,6 +181,34 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*class ListTask extends AsyncTask{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+            AlertDialog dialog = new ProgressDialog(getApplicationContext());
+            dialog.setMessage("Please wait...");
+            dialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override//background
+        protected Object doInBackground(Object[] params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+        }
+    }*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,16 +219,18 @@ public class MainActivity extends AppCompatActivity {
             askForPermission();
         }
 
+        setDb();
+
         Context context = getApplicationContext();
         final UsageStatsManager statsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         setStats();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);//before all the findviewbyid
+        setContentView(R.layout.activity_main);//before all the findViewById
 
-        //_________________________
         this.mainText=(TextView)findViewById(R.id.main_text);
         updateMainText();
+
 
         Button btDay = (Button) findViewById(R.id.button_day);
         Button btWeek = (Button) findViewById(R.id.button_week);
@@ -198,41 +243,28 @@ public class MainActivity extends AppCompatActivity {
         setButtonListener(btYear, "Yearly");
 
 
+        //rendering apps stats list
+        renderApps();
+
+
+
+        //db.addLimit("com.android.chrome",60L);
+        //db.addLimit("com.google.android.youtube",20L);
+        //db.addLimit("com.google.android.music",2L);
+        //db.addLimit("com.amazon.avod.thirdpartyclient",10L);
+
+        //Long lim1 = db.getLimit("app1"); //Log.wtf("limitapp1=", lim1.toString());
+
         //rendering fragment - useless
-        AppsListFragment appsListFragment= new AppsListFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.main_container, appsListFragment).commit();
+        //AppsListFragment appsListFragment= new AppsListFragment();
+        //getSupportFragmentManager().beginTransaction().add(R.id.main_container, appsListFragment).commit();
 
-        //rendering apps stats
-        ListView listView;
-        listView = (ListView) findViewById(R.id.apps_list);
-        ListAdapter adapter=new StatsAdapter(this, stats);
-        listView.setAdapter(adapter);
-
-        //TextView frag=(TextView)findViewById(R.id.main_text);
-        //frag.setText("FFFFFFFF main");
-
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
-        //dataBaseHelper.addLimit("app1", "1");
-        //dataBaseHelper.addLimit("app2", "2");
-        //String lim = dataBaseHelper.getLimit("app1");
-        //Log.wtf("limitapp1=", lim);
-        //String lim2 = dataBaseHelper.getLimit("app2");
-        //Log.wtf("limitapp2=", lim2);
-
-        //dataBaseHelper.deleteLimit("app4");
-
-        String lim3 = dataBaseHelper.getLimit("app3");
-        Log.wtf("limitapp3=", lim3);
-        dataBaseHelper.updateLimit("app3", "33");
-        String lim33 = dataBaseHelper.getLimit("app3");
-        Log.wtf("limitapp3=", lim33);
-
-        /*Cursor c = dataBaseHelper.getAll();
-        String t = c.getColumnName(1); String z = c.getColumnName(0); String s = c.toString();
-        Log.wtf("GETALL", s); Log.wtf("GETt", t); Log.wtf("GETz", z);*/
-
+        //db.open on resume
+        //db.close(); on pause // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx-------------
 
     }
+
+
 }
 
 

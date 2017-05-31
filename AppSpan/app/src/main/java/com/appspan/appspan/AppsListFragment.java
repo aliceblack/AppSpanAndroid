@@ -27,15 +27,8 @@ public class AppsListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //works w frag layout not in main __________________
-        //TextView frag=(TextView)getView().findViewById(R.id.frag_text);
-        //frag.setText("FFFFFFF frag");
-        //ListView listView;
-        //String[] months=new String[] {"Janaury","Feb","March","April","May","June","July","August","September","Octomber","November","December"};
-        //listView= (ListView)getView().findViewById(R.id.fragment_apps_list);
-        //ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1, android.R.id.text1, months);
-        //listView.setAdapter(arrayAdapter);
-        //__________________________________________________________________
+        TextView frag=(TextView)getView().findViewById(R.id.frag_text);
+        frag.setText("Please select a time interval");
 
     }
 }

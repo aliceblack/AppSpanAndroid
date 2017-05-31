@@ -58,6 +58,14 @@
             android:layout_gravity="center">
         </TextView>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/main_empty"
+            android:textSize="20dip"
+            android:layout_gravity="center">
+        </TextView>
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
