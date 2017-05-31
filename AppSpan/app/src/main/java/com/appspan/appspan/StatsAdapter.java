@@ -3,9 +3,11 @@ package com.appspan.appspan;
 import android.app.usage.UsageStats;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,14 +63,14 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
 
 
         Drawable appIcon=null;
+        ImageView appIconView=(ImageView)rowView.findViewById(R.id.app_icon);
         try {
             appIcon = packageManager.getApplicationIcon(pkgName);
-        } catch (PackageManager.NameNotFoundException e) {
+            appIconView.setImageDrawable(appIcon);
+        } catch (PackageManager.NameNotFoundException e) { //set custom apk icon
             e.printStackTrace();
+            appIconView.setImageResource(R.drawable.apk_icon);
         }
-        ImageView appIconView=(ImageView)rowView.findViewById(R.id.app_icon);
-        appIconView.setImageDrawable(appIcon);
-
 
         return rowView;
     }

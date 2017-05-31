@@ -8,45 +8,58 @@
     android:id="@+id/main_container">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/colorBackground">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_day"
-                android:text="daily"/>
+                android:text="daily"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_week"
-                android:text="weekly"/>
+                android:text="weekly"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_month"
-                android:text="monthly"/>
+                android:text="monthly"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_year"
-                android:text="yearly"/>
+                android:text="yearly"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"/>
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/main_text"
-            android:text="main text!"
-            android:textSize="40dip">
+            android:text="Apps Usage"
+            android:textSize="20dip"
+            android:layout_gravity="center">
         </TextView>
 
         <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/apps_list">
 

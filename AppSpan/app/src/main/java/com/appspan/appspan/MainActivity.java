@@ -42,8 +42,11 @@ import android.content.DialogInterface.OnClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    String interval="DAILY";
+    String interval="Daily";
     List<UsageStats> stats=null;
+    TextView mainText=null;
+
+    public void updateMainText(){this.mainText.setText(interval+" applications usage");}
 
     public void setInterval(String i) {interval=i;}
 
@@ -55,10 +58,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void renderApps(){
-        ListView listView;
+        updateMainText();
+        final ListView listView;
         listView = (ListView) findViewById(R.id.apps_list);
-        ListAdapter adapter=new StatsAdapter(this, stats);
+        final ListAdapter adapter=new StatsAdapter(this, stats);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                UsageStats us = (UsageStats) adapterView.getItemAtPosition(position);
+                String pkg = us.getPackageName();
+                Toast toast = Toast.makeText(getApplicationContext(), pkg , Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
     }
 
     //checks if permission is granted
@@ -109,19 +122,19 @@ public class MainActivity extends AppCompatActivity {
 
         int intervalSelection = 0;
         switch (interval) {
-            case "DAILY":
+            case "Daily":
                 start.set(Calendar.DAY_OF_MONTH, -7);
                 intervalSelection = UsageStatsManager.INTERVAL_DAILY;
                 break;
-            case "WEEKLY":
+            case "Weekly":
                 start.set(Calendar.MONTH, -1);
                 intervalSelection = UsageStatsManager.INTERVAL_WEEKLY;
                 break;
-            case "MONTHLY":
+            case "Monthly":
                 start.set(Calendar.MONTH, -6);
                 intervalSelection = UsageStatsManager.INTERVAL_MONTHLY;
                 break;
-            case "YEARLY":
+            case "Yearly":
                 start.set(Calendar.YEAR, -1);
                 intervalSelection = UsageStatsManager.INTERVAL_YEARLY;
                 break;
@@ -167,27 +180,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);//before all the findviewbyid
 
         //_________________________
+        this.mainText=(TextView)findViewById(R.id.main_text);
+        updateMainText();
+
         Button btDay = (Button) findViewById(R.id.button_day);
         Button btWeek = (Button) findViewById(R.id.button_week);
         Button btMonth = (Button) findViewById(R.id.button_month);
         Button btYear = (Button) findViewById(R.id.button_year);
 
-        setButtonListener(btDay, "DAILY");
-        setButtonListener(btWeek, "WEEKLY");
-        setButtonListener(btMonth, "MONTHLY");
-        setButtonListener(btYear, "YEARLY");
+        setButtonListener(btDay, "Daily");
+        setButtonListener(btWeek, "Weekly");
+        setButtonListener(btMonth, "Monthly");
+        setButtonListener(btYear, "Yearly");
 
-        //function based on the following code
-        /*btDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast toast=Toast.makeText(MainActivity.this,"DAILY",Toast.LENGTH_SHORT);
-                toast.show();
-                setInterval("DAILY");
-                setStats();
-                renderApps();
-            }
-        });*/
 
         //rendering fragment - useless
         AppsListFragment appsListFragment= new AppsListFragment();
