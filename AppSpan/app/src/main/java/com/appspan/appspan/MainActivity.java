@@ -1,6 +1,10 @@
 package com.appspan.appspan;
 import android.app.FragmentTransaction;
 import android.app.usage.UsageStats;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.support.v4.app.FragmentActivity;
@@ -206,6 +210,28 @@ public class MainActivity extends AppCompatActivity {
 
         //TextView frag=(TextView)findViewById(R.id.main_text);
         //frag.setText("FFFFFFFF main");
+
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+        //dataBaseHelper.addLimit("app1", "1");
+        //dataBaseHelper.addLimit("app2", "2");
+        //String lim = dataBaseHelper.getLimit("app1");
+        //Log.wtf("limitapp1=", lim);
+        //String lim2 = dataBaseHelper.getLimit("app2");
+        //Log.wtf("limitapp2=", lim2);
+
+        //dataBaseHelper.deleteLimit("app4");
+
+        String lim3 = dataBaseHelper.getLimit("app3");
+        Log.wtf("limitapp3=", lim3);
+        dataBaseHelper.updateLimit("app3", "33");
+        String lim33 = dataBaseHelper.getLimit("app3");
+        Log.wtf("limitapp3=", lim33);
+
+        /*Cursor c = dataBaseHelper.getAll();
+        String t = c.getColumnName(1); String z = c.getColumnName(0); String s = c.toString();
+        Log.wtf("GETALL", s); Log.wtf("GETt", t); Log.wtf("GETz", z);*/
+
+
     }
 }
 
