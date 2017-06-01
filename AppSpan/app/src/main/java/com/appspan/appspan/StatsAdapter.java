@@ -42,7 +42,6 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
 
         //name of the application
         String pkgName = getItem(position).getPackageName();
-        Log.wtf("APPNAME", pkgName);
         TextView nameTextView = (TextView)rowView.findViewById(R.id.app_name_row);
         String appName=null;
         try {

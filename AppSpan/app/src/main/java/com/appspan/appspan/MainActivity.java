@@ -49,7 +49,6 @@ import  android.widget.AdapterView.OnItemSelectedListener;
 import android.content.DialogInterface.OnClickListener;
 
 public class MainActivity extends AppCompatActivity {
-
     DataBaseHelper db=null;
 
     public void setDb() {
@@ -76,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         stats=getStats(statsManager, getInterval());
     }
 
+    //renders apps list, sets items clickable
     public void renderApps(){
         updateMainText();
         final ListView listView;
@@ -89,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
                 String pkg = us.getPackageName();
                 Toast toast = Toast.makeText(getApplicationContext(), pkg , Toast.LENGTH_SHORT);
                 toast.show();
+
+                //new activity to set limit
+                Intent intentOptions = new Intent(getApplicationContext(), OptionsActivity.class);//context, class
+                intentOptions.putExtra("package options", pkg);//options activity
+                startActivity(intentOptions);
             }
         });
     }
@@ -168,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         return stats;
     }
 
+    //sets listeners for interval buttons
     public void setButtonListener(Button bt, final String s){
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,14 +189,21 @@ public class MainActivity extends AppCompatActivity {
 
     /*class ListTask extends AsyncTask{
 
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
+                ProgressDialog dialog = new ProgressDialog(getApplicationContext());
+                dialog.setMessage("Please wait...");
+                dialog.show();
+        }
 
-            AlertDialog dialog = new ProgressDialog(getApplicationContext());
-            dialog.setMessage("Please wait...");
-            dialog.show();
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            Toast toast=Toast.makeText(MainActivity.this,"onPostExecute()",Toast.LENGTH_SHORT);
+            toast.show();
         }
 
         @Override
@@ -198,39 +211,50 @@ public class MainActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
         }
 
-        @Override//background
+        @Override
         protected Object doInBackground(Object[] params) {
             return null;
         }
 
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-        }
+
+
     }*/
+
+    public int checkPermissions(){//0 permission granted
+        int usagePermission=opsUsagePermission();
+        Log.wtf("PERMISSION ON/OFF", String.valueOf(usagePermission));
+        return  usagePermission;
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        int usagePermission=opsUsagePermission();
-        Log.wtf("PERMISSION ON/OFF", String.valueOf(usagePermission));
-        if(usagePermission != 0){ //0 permission granted
-            askForPermission();
-        }
-
-        setDb();
-
-        Context context = getApplicationContext();
-        final UsageStatsManager statsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-        setStats();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);//before all the findViewById
 
+        Button btReload = (Button) findViewById(R.id.button_reload);
+
+        btReload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast=Toast.makeText(MainActivity.this,"RELOADING",Toast.LENGTH_SHORT);
+                toast.show();
+                setStats();
+                renderApps();
+        }});
+
+
+        if(checkPermissions()!=0){
+            askForPermission();
+        }
+
+
+        setDb();
+        setStats();
+
         this.mainText=(TextView)findViewById(R.id.main_text);
         updateMainText();
-
 
         Button btDay = (Button) findViewById(R.id.button_day);
         Button btWeek = (Button) findViewById(R.id.button_week);
@@ -242,15 +266,15 @@ public class MainActivity extends AppCompatActivity {
         setButtonListener(btMonth, "Monthly");
         setButtonListener(btYear, "Yearly");
 
-
         //rendering apps stats list
         renderApps();
 
-
+        //___________________________________________________________________________
 
         //db.addLimit("com.android.chrome",60L);
         //db.addLimit("com.google.android.youtube",20L);
-        //db.addLimit("com.google.android.music",2L);
+        //db.addLimit("com.googl
+        // e.android.music",2L);
         //db.addLimit("com.amazon.avod.thirdpartyclient",10L);
 
         //Long lim1 = db.getLimit("app1"); //Log.wtf("limitapp1=", lim1.toString());
