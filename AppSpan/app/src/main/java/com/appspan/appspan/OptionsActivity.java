@@ -15,7 +15,6 @@ import android.widget.Toast;
 public class OptionsActivity extends Activity{
 
     DataBaseHelper DataBase=null;
-    String appName=null;
     String pkg=null;
 
     public void setPkg(String pkg) {
@@ -26,15 +25,6 @@ public class OptionsActivity extends Activity{
         this.DataBase=new DataBaseHelper(this);
     }
 
-    public void setAppName(){
-        PackageManager packageManager = getApplicationContext().getPackageManager();
-        try {
-            appName = (String) packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, PackageManager.GET_META_DATA));
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (appName==null){this.appName=pkg;}
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,7 +33,7 @@ public class OptionsActivity extends Activity{
 
 
         setPkg(pkg);
-        setAppName();
+
 
         Intent mainIntent = getIntent();
         final String pkg = mainIntent.getExtras().getString("package options");//key of pair
@@ -71,7 +61,8 @@ public class OptionsActivity extends Activity{
 
         if( limit != -1 ){//limit already exists
             final TextView textViewCurrent = (TextView)findViewById(R.id.options_current);
-            textViewCurrent.setText("Current daily limit for " + this.appName + ": " + limit + " minutes");
+
+            textViewCurrent.setText("Current daily limit for " + pkg + ": " + limit + " minutes");
 
 
 
@@ -83,7 +74,7 @@ public class OptionsActivity extends Activity{
                     final Long newlimit = Long.parseLong(newLimitString);
 
                     DataBase.updateLimit(pkg, newlimit);
-                    textViewCurrent.setText("Current daily limit for " + appName + ": " + newlimit.toString() + " minutes");
+                    textViewCurrent.setText("Current daily limit for " + pkg + ": " + newlimit.toString() + " minutes");
                     Toast toast=Toast.makeText(getApplication(),"Limit updated",Toast.LENGTH_SHORT);
                     toast.show();
                 }});
@@ -115,7 +106,7 @@ public class OptionsActivity extends Activity{
                     final Long newlimit = Long.parseLong(newLimitString);
 
                     final TextView textViewCurrent = (TextView)findViewById(R.id.options_current);
-                    textViewCurrent.setText("Current daily limit for " + appName + ": " + newlimit.toString() + " minutes");
+                    textViewCurrent.setText("Current daily limit for " + pkg + ": " + newlimit.toString() + " minutes");
 
                     DataBase.addLimit(pkg, newlimit);
                     Toast toast=Toast.makeText(getApplication(),"Limit set",Toast.LENGTH_SHORT);
