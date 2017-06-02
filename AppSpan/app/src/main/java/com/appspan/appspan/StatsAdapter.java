@@ -4,8 +4,6 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +37,7 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
         View rowView = inflater.inflate(R.layout.row_layout, parent, false);
         PackageManager packageManager= getContext().getPackageManager();
 
-        //name of the application
+        /*name of the application*/
         String pkgName = getItem(position).getPackageName();
         TextView nameTextView = (TextView)rowView.findViewById(R.id.app_name_row);
         String appName=null;
@@ -53,20 +50,20 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
         nameTextView.setText(appName);
 
 
-        //total time in foreground
+        /*total time in foreground*/
         Long appForeground = getItem(position).getTotalTimeInForeground();
         appForeground=appForeground/60000; //milliseconds to minutes
         TextView foregroundTextView = (TextView)rowView.findViewById(R.id.app_foreground_row);
         foregroundTextView.setText(appForeground.toString()+" minutes");
 
 
-        //last time this package was used
+        /*last time this package was used*/
         Long appLastUsage = getItem(position).getLastTimeStamp();
         String last= DateFormat.getDateTimeInstance().format(new Date(appLastUsage));
         TextView lastUsageTextView = (TextView)rowView.findViewById(R.id.app_lastusage_row);
         lastUsageTextView.setText(last);
 
-        //application icon
+        /*application icon*/
         Drawable appIcon=null;
         ImageView appIconView=(ImageView)rowView.findViewById(R.id.app_icon);
         try {
@@ -78,7 +75,7 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
         }
 
 
-        //colored dot reporting time usage status
+        /*colored dot reporting time usage status*/
         Drawable dot=null;
         ImageView dotView=(ImageView)rowView.findViewById(R.id.app_dot);
         dotView.setImageResource(R.drawable.dot_green);
@@ -109,7 +106,8 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
                 dotView.setImageResource(R.drawable.dot_red);
             }
             TextView totalLimit = (TextView)rowView.findViewById(R.id.app_foreground_limit);
-            totalLimit.setText(" out of "+ lim.toString());
+            String used=" out of "+lim.toString();
+            totalLimit.setText(used);
         }
 
 

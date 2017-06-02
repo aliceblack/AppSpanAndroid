@@ -30,47 +30,50 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    /*adds a record for the package "pkg" whit limit "limit"*/
     public void addLimit(String pkg, long limit){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column_1, pkg);
         contentValues.put(column_2, limit);
         Long result = database.insert(tableName, null, contentValues);
-        Log.wtf("INSERT", String.valueOf(result));
+        //Log.wtf("INSERT", String.valueOf(result));
     }
 
+    /*returns a cursor for all the records*/
     public Cursor getAll(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + tableName , null );
         cursor.moveToFirst();
-        if(cursor!=null && cursor.getCount()>0)
-            {Log.wtf("DBGETALL ", String.valueOf("got result from db"));}
-        else
-            {Log.wtf("DBGETALL ", String.valueOf("no result from db"));}
         return  cursor;
     }
 
+    /*gets time limit for the package pkg*/
     public Long getLimit(String pkg){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select minutes from " + tableName + " where package='" + pkg + "';", null);
         cursor.moveToFirst();
         int index = cursor.getColumnIndex("minutes");
-        if(cursor!=null && cursor.getCount()>0){
-            return cursor.getLong(index);
+        if(cursor != null && cursor.getCount()>0){
+            Long lim = cursor.getLong(index);
+            cursor.close();
+            return lim;
         }
         return -1L;
 
     }
 
+    /*replaces time limit for the package pkg*/
     public void updateLimit(String pkg, Long limit){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column_1, pkg);
         contentValues.put(column_2, limit);
-        //run time string substitution in place of "?"
+        //run time string substitution
         db.update(tableName, contentValues, "package = ?" , new String[] { pkg });
     }
 
+    /*deletes database record for package pkg*/
     public void deleteLimit(String pkg){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(tableName, "package = ?" , new String[] { pkg });

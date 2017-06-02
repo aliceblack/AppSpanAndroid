@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/main_text"
             android:text="Apps Usage"
-            android:textSize="20dip"
+            android:textSize="20sp"
             android:layout_gravity="center">
         </TextView>
 

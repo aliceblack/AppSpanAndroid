@@ -1,54 +1,33 @@
 package com.appspan.appspan;
-import android.app.Dialog;
-import android.app.FragmentTransaction;
+
 import android.app.usage.UsageStats;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
+import android.app.usage.UsageStatsManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.app.usage.UsageStatsManager;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
-import android.Manifest;
 import android.provider.Settings;
-import android.net.Uri;
-import android.content.pm.PackageManager;
 import android.content.Context;
+import android.widget.Toast;
 import android.util.Log;
 import android.app.AppOpsManager;
-import android.content.pm.ApplicationInfo;
+import android.widget.Button;
+import android.widget.ListAdapter;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-import android.support.v4.app.Fragment;
-import 	java.util.Calendar;
+import java.util.Calendar;
 import java.util.List;
-import 	java.text.DateFormat;
-import java.util.Date;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import  android.support.v4.app.FragmentManager;
-import android.widget.TextView;
 import java.util.Collections;
-import java.util.Vector;
-import  android.app.ProgressDialog;
-import android.widget.Spinner;
-import  android.widget.AdapterView;
-import  android.widget.AdapterView.OnItemSelectedListener;
-import android.content.DialogInterface.OnClickListener;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.AdapterView;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    String interval="Daily";
+    List<UsageStats> stats=null;
+    TextView mainText=null;
     DataBaseHelper db=null;
 
     public void setDb() {
@@ -59,23 +38,20 @@ public class MainActivity extends AppCompatActivity {
         return db;
     }
 
-    String interval="Daily";
-    List<UsageStats> stats=null;
-    TextView mainText=null;
-
-    public void updateMainText(){this.mainText.setText(interval+" applications usage");}
-
-
     public void setInterval(String i) {interval=i;}
 
     public String getInterval(){return interval;}
 
+    /*Displays time interval*/
+    public void updateMainText(){this.mainText.setText(interval+" applications usage");}
+
+    /*Gets usage statistics*/
     public void setStats(){
         final UsageStatsManager statsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
-        stats=getStats(statsManager, getInterval());
+        stats = getStats(statsManager, getInterval());
     }
 
-    //renders apps list, sets items clickable
+    //Renders applications list
     public void renderApps(){
         updateMainText();
         final ListView listView;
@@ -87,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 UsageStats us = (UsageStats) adapterView.getItemAtPosition(position);
                 String pkg = us.getPackageName();
-                Toast toast = Toast.makeText(getApplicationContext(), pkg , Toast.LENGTH_SHORT);
-                toast.show();
+                //Toast toast = Toast.makeText(getApplicationContext(), pkg , Toast.LENGTH_SHORT);
+                //toast.show();
 
                 //new activity to set limit
                 Intent intentOptions = new Intent(getApplicationContext(), OptionsActivity.class);//context, class
@@ -109,6 +85,14 @@ public class MainActivity extends AppCompatActivity {
         return mode;
     }
 
+    public int checkPermissions(){//0 permission granted
+        int usagePermission=opsUsagePermission();
+        //Log.wtf("PERMISSION ON/OFF", String.valueOf(usagePermission));
+        return  usagePermission;
+    }
+
+    /*Asks user for PACKAGE_USAGE_STATS permission,
+    * redirects the user to the Access Settings Management*/
     public void askForPermission(){
         AlertDialog.Builder permissionDialog = new AlertDialog.Builder(this);
         permissionDialog.setMessage("AppSpan need to access Usage Data, grant permission?")
@@ -138,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
     Monthly data: 6 months
     Yearly data: 2 years*/
 
+    /*Get statistics from the UsageStatsManager*/
     public List<UsageStats> getStats(UsageStatsManager statsManager, String interval){
 
         Calendar start = Calendar.getInstance();
@@ -173,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         return stats;
     }
 
-    //sets listeners for interval buttons
+    /*Sets listeners for the interval selection buttons*/
     public void setButtonListener(Button bt, final String s){
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,51 +172,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /*class ListTask extends AsyncTask{
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-                ProgressDialog dialog = new ProgressDialog(getApplicationContext());
-                dialog.setMessage("Please wait...");
-                dialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            Toast toast=Toast.makeText(MainActivity.this,"onPostExecute()",Toast.LENGTH_SHORT);
-            toast.show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Object[] values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            return null;
-        }
-
-
-
-    }*/
-
-    public int checkPermissions(){//0 permission granted
-        int usagePermission=opsUsagePermission();
-        Log.wtf("PERMISSION ON/OFF", String.valueOf(usagePermission));
-        return  usagePermission;
-    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);//before all the findViewById
+        setContentView(R.layout.activity_main);
 
         Button btReload = (Button) findViewById(R.id.button_reload);
 
@@ -266,25 +212,10 @@ public class MainActivity extends AppCompatActivity {
         setButtonListener(btMonth, "Monthly");
         setButtonListener(btYear, "Yearly");
 
+
         //rendering apps stats list
         renderApps();
 
-        //___________________________________________________________________________
-
-        //db.addLimit("com.android.chrome",60L);
-        //db.addLimit("com.google.android.youtube",20L);
-        //db.addLimit("com.googl
-        // e.android.music",2L);
-        //db.addLimit("com.amazon.avod.thirdpartyclient",10L);
-
-        //Long lim1 = db.getLimit("app1"); //Log.wtf("limitapp1=", lim1.toString());
-
-        //rendering fragment - useless
-        //AppsListFragment appsListFragment= new AppsListFragment();
-        //getSupportFragmentManager().beginTransaction().add(R.id.main_container, appsListFragment).commit();
-
-        //db.open on resume
-        //db.close(); on pause // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx-------------
 
     }
 
@@ -292,6 +223,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         renderApps();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
     }
 }
 
