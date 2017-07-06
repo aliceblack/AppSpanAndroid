@@ -19,6 +19,7 @@ public class OptionsActivity extends Activity{
     DataBaseHelper DataBase=null;
     String pkg=null;
 
+    //app package
     public void setPkg(String pkg) {
         this.pkg = pkg;
     }
@@ -35,11 +36,13 @@ public class OptionsActivity extends Activity{
         setPkg(pkg);
 
         Intent mainIntent = getIntent();
+        //get package name from MainActivity
         final String pkg = mainIntent.getExtras().getString("package options");//key of pair
+        //get usage limit from database
         Long limit = DataBase.getLimit(pkg);
 
-        final EditText editText=(EditText)findViewById(R.id.edit_limit);
-        final Button btSet= (Button) findViewById(R.id.button_set);
+        final EditText editText = (EditText)findViewById(R.id.edit_limit);
+        final Button btSet = (Button) findViewById(R.id.button_set);
 
 
         /*application icon*/

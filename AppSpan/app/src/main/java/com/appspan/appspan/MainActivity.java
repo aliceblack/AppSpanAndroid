@@ -30,20 +30,26 @@ public class MainActivity extends AppCompatActivity {
     TextView mainText=null;
     DataBaseHelper db=null;
 
-    public void setDb() {
+    public void setDb(){
         db = new DataBaseHelper(this);
     }
 
-    public DataBaseHelper getDb() {
+    public DataBaseHelper getDb(){
         return db;
     }
 
-    public void setInterval(String i) {interval=i;}
+    public void setInterval(String i){
+        interval=i;
+    }
 
-    public String getInterval(){return interval;}
+    public String getInterval(){
+        return interval;
+    }
 
     /*Displays time interval*/
-    public void updateMainText(){this.mainText.setText(interval+" applications usage");}
+    public void updateMainText(){
+        this.mainText.setText(interval+" applications usage");
+    }
 
     /*Gets usage statistics*/
     public void setStats(){
@@ -66,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 //Toast toast = Toast.makeText(getApplicationContext(), pkg , Toast.LENGTH_SHORT);
                 //toast.show();
 
-                //new activity to set limit
+                //new activity to set the limit
                 Intent intentOptions = new Intent(getApplicationContext(), OptionsActivity.class);//context, class
                 intentOptions.putExtra("package options", pkg);//options activity
                 startActivity(intentOptions);
