@@ -41,8 +41,6 @@
 
         <service android:name=".Monitor" />
         <service android:name=".NotificationService" />
-        <activity android:name=".MonitorCurrentApp"
-            android:label="options"/>
 
 
     </application>
