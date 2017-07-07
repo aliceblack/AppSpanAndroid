@@ -1,4 +1,5 @@
 package com.appspan.appspan;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -9,6 +10,9 @@ import java.util.TimerTask;
 import android.os.Handler;
 import android.util.Log;
 
+/**
+ * This class triggers the NotificationService class every minute
+ */
 public class Monitor extends Service {
     @Nullable
     @Override
@@ -16,6 +20,9 @@ public class Monitor extends Service {
         return null;
     }
 
+    /**
+     * triggers the NotificationService every minute
+     */
     @Override
     public void onCreate() {
         super.onCreate();

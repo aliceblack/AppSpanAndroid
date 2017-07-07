@@ -7,52 +7,77 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import java.util.Calendar;
 import android.app.NotificationManager;
 import android.app.Notification;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.SortedMap;
 
+/**
+ * This class manage information about the application with which the user interacts
+ */
 public class NotificationService extends Service {
     public DataBaseHelper db = null;
     public String currentApp = null;
     public Long currentUsage = 0L;
     public Long limit = 0L;
 
+    /**
+     * sets the database instance
+     */
     public void setDb(){
         db = new DataBaseHelper(getBaseContext());
     }
 
+    /**
+     * get the time limit for the app tha is being used from the DataBase
+     */
     public void setLimit(){
         limit = db.getLimit(getCurrentApp());
     }
 
+    /**
+     * returns the database instance
+     * @return DataBaseHelper the smart phone's sql database
+     */
     public DataBaseHelper getDb(){
         return db;
     }
 
+    /**
+     * returns the time limit the user set for the application
+     * @return Long the time limit for the app
+     */
     public Long getLimit(){
         return limit;
     }
 
+    /**
+     * returns the time usage for the app the user is interacting with
+     * @return Long time usage for the app in minutes
+     */
     public Long getCurrentUsage(){
         return currentUsage;
     }
 
-
+    /**
+     * returns the app that is being used
+     * @return String the package name for the app
+     */
     public String getCurrentApp(){
         return currentApp;
     }
 
+    /**
+     * sets the package name of the app that is being used
+     */
     public void setCurrentApp(){
-        //gets wich application is being used
+        //detects which application is being used
         UsageStatsManager usageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
         long time = System.currentTimeMillis();
         List<UsageStats> appList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,  time - 1000*1000, time);
@@ -68,9 +93,12 @@ public class NotificationService extends Service {
     }
 
 
-    //build and show a notification
+    /**
+     * builds and shows a notification
+     * containing the app name and the time out of the time limit the user has set
+     * @param currentUsage
+     */
     public void buildNotification(Long currentUsage){
-
         //name of the application
         PackageManager packageManager= getApplicationContext().getPackageManager();
         String appName=null;
@@ -86,14 +114,17 @@ public class NotificationService extends Service {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.small_icon)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
-                        .setContentTitle("Warning "+currentApp)
+                        .setContentTitle("Warning")
                         .setContentText(appName+": "+currentUsage+" minutes out of "+getLimit())
                         .setDefaults(Notification.DEFAULT_SOUND);
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(001, mBuilder.build());
     }
 
-    //sets the current usage for the app in foreground
+    /**
+     * sets the current usage for the app in foreground
+     * @return Long current time usage for the app in minutes
+     */
     public Long setCurrentUsage(){
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
@@ -103,12 +134,10 @@ public class NotificationService extends Service {
         List<UsageStats> stats = statsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, start.getTimeInMillis(), end.getTimeInMillis());
         Collections.reverse(stats); //today first
 
-        Log.wtf("CURRENT APP -- ", String.valueOf(currentApp));
         for(int i=0; i<stats.size(); ++i){
             if( String.valueOf(stats.get(i).getPackageName()).equals(currentApp)  ) {
                 currentUsage = stats.get(i).getTotalTimeInForeground();
                 currentUsage = currentUsage/60000;
-                //Log.wtf("Current app usage: "+String.valueOf(stats.get(i).getPackageName()), String.valueOf(currentUsage));
                 break;
             }
         }
@@ -121,6 +150,11 @@ public class NotificationService extends Service {
         return null;
     }
 
+    /**
+     * sets the attributes of the class;
+     * triggers a notification when a limit is reached
+     * or the user keeps on using an app after the limit
+     */
     @Override
     public void onCreate() {
         super.onCreate();

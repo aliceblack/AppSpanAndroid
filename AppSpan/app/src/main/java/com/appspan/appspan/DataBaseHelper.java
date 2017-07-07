@@ -1,20 +1,24 @@
 package com.appspan.appspan;
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
+/**
+ * This class creates a sql database for the device and implements some useful database operations
+ */
 public class DataBaseHelper extends SQLiteOpenHelper{
     private static final String databaseName = "Limits.db";
     private static final String tableName = "minutestable";
     private static final String column_1 = "package";
     private static final String column_2 = "minutes";
 
-
+    /**
+     * class constructor
+     * @param context
+     */
     public DataBaseHelper(Context context) {
         super(context, databaseName, null, 20);
     }
@@ -30,17 +34,24 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    /*adds a record for the package "pkg" whit limit "limit"*/
+    /**
+     * adds a record for the package "pkg" whit limit "limit"
+     * @param pkg
+     * @param limit
+     */
     public void addLimit(String pkg, long limit){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column_1, pkg);
         contentValues.put(column_2, limit);
-        Long result = database.insert(tableName, null, contentValues);
-        //Log.wtf("INSERT", String.valueOf(result));
+        database.insert(tableName, null, contentValues);
+
     }
 
-    /*returns a cursor for all the records*/
+    /**
+     * returns a Cursor pointing to the first element of the databse
+     * @return Cursor
+     */
     public Cursor getAll(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + tableName , null );
@@ -48,7 +59,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         return  cursor;
     }
 
-    /*gets time limit for the package pkg*/
+    /**
+     * gets time limit for the package pkg
+     * @param pkg
+     * @return Long
+     */
     public Long getLimit(String pkg){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select minutes from " + tableName + " where package='" + pkg + "';", null);
@@ -63,7 +78,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     }
 
-    /*replaces time limit for the package pkg*/
+    /**
+     * replaces time limit for the package pkg
+     * @param pkg
+     * @param limit
+     */
     public void updateLimit(String pkg, Long limit){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -73,7 +92,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.update(tableName, contentValues, "package = ?" , new String[] { pkg });
     }
 
-    /*deletes database record for package pkg*/
+    /**
+     * deletes database record for package pkg
+     * @param pkg
+     */
     public void deleteLimit(String pkg){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(tableName, "package = ?" , new String[] { pkg });

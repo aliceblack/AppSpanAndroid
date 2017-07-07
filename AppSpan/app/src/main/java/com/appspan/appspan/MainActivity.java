@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.content.Context;
 import android.widget.Toast;
-import android.util.Log;
 import android.app.AppOpsManager;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -23,6 +22,12 @@ import android.widget.TextView;
 import android.widget.AdapterView;
 
 
+/**
+ * Project's main activity; let the user choose the desired time interval;
+ * renders the usage data through StatsAdapter;
+ * checks for PACKAGE_USAGE_STATS permissions
+ * and eventually ask the user to enable it since is a system-level permission
+ */
 public class MainActivity extends AppCompatActivity {
 
     String interval="Daily";
@@ -46,18 +51,24 @@ public class MainActivity extends AppCompatActivity {
         return interval;
     }
 
-    /*Displays time interval*/
+    /**
+     * displays the time interval
+     */
     public void updateMainText(){
         this.mainText.setText(interval+" applications usage");
     }
 
-    /*Gets usage statistics*/
+    /**
+     * gets usage statistics
+     */
     public void setStats(){
         final UsageStatsManager statsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
         stats = getStats(statsManager, getInterval());
     }
 
-    //Renders applications list
+    /**
+     * renders applications list
+     */
     public void renderApps(){
         updateMainText();
         final ListView listView;
@@ -69,10 +80,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 UsageStats us = (UsageStats) adapterView.getItemAtPosition(position);
                 String pkg = us.getPackageName();
-                //Toast toast = Toast.makeText(getApplicationContext(), pkg , Toast.LENGTH_SHORT);
-                //toast.show();
 
-                //new activity to set the limit
+                //new activity to let the user set the limit
                 Intent intentOptions = new Intent(getApplicationContext(), OptionsActivity.class);//context, class
                 intentOptions.putExtra("package options", pkg);//options activity
                 startActivity(intentOptions);
@@ -80,9 +89,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //checks if permission is granted
-    //android.permission.PACKAGE_USAGE_STATS is a system-level permission
-    //0 permission granted, -1 permission denied
+    /**
+     * checks if permission is granted
+     * android.permission.PACKAGE_USAGE_STATS is a system-level permission
+     * 0 permission granted, -1 permission denied
+     * @return
+     */
     public int opsUsagePermission(){
         Context context=this.getApplicationContext();
         AppOpsManager appOps = (AppOpsManager)context.getSystemService(Context.APP_OPS_SERVICE);
@@ -97,8 +109,10 @@ public class MainActivity extends AppCompatActivity {
         return  usagePermission;
     }
 
-    /*Asks user for PACKAGE_USAGE_STATS permission,
-    * redirects the user to the Access Settings Management*/
+    /**
+     * Asks user for PACKAGE_USAGE_STATS permission,
+     * redirects the user to the Access Settings Management
+     */
     public void askForPermission(){
         AlertDialog.Builder permissionDialog = new AlertDialog.Builder(this);
         permissionDialog.setMessage("AppSpan need to access Usage Data, grant permission?")
@@ -128,7 +142,12 @@ public class MainActivity extends AppCompatActivity {
     Monthly data: 6 months
     Yearly data: 2 years*/
 
-    /*Get statistics from the UsageStatsManager*/
+    /**
+     * Get statistics from the UsageStatsManager
+     * @param statsManager
+     * @param interval
+     * @return List<UsageStats>
+     */
     public List<UsageStats> getStats(UsageStatsManager statsManager, String interval){
 
         Calendar start = Calendar.getInstance();
@@ -164,7 +183,11 @@ public class MainActivity extends AppCompatActivity {
         return stats;
     }
 
-    /*Sets listeners for the interval selection buttons*/
+    /**
+     * Sets listeners for the interval selection buttons
+     * @param bt button
+     * @param s string
+     */
     public void setButtonListener(Button bt, final String s){
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -236,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //db.close();
     }
 }
 

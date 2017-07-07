@@ -1,6 +1,5 @@
 package com.appspan.appspan;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,15 +13,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This activity let the user set a time limit for an app
+ * displays the app package name, the icon and the current limit, if a limit is already set;
+ * lets the user delete the limit
+ */
 public class OptionsActivity extends Activity{
 
-    DataBaseHelper DataBase=null;
     String pkg=null;
 
-    //app package
+    DataBaseHelper DataBase=null;
+
     public void setPkg(String pkg) {
         this.pkg = pkg;
     }
+
     public OptionsActivity() {
         this.DataBase=new DataBaseHelper(this);
     }
@@ -67,9 +72,6 @@ public class OptionsActivity extends Activity{
         btBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast=Toast.makeText(getApplication(),"Back",Toast.LENGTH_SHORT);
-                toast.show();
-
                 Intent intentMain = new Intent(getApplicationContext(), MainActivity.class);//context, class
                 startActivity(intentMain);
 

@@ -1,12 +1,10 @@
 package com.appspan.appspan;
 
 import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +12,26 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
-
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class renders the applications list;
+ * gets name, icon, total time in foreground and last time usage for all the apps
+ */
 public class StatsAdapter extends ArrayAdapter<UsageStats> {
+
     DataBaseHelper DataBase=null;
     String interval=null;
 
+    /**
+     * class constructor
+     * @param context
+     * @param objects
+     * @param db DataBaseHelper database
+     * @param ntr String time intervall: daly weekly monthly yearly
+     */
     public StatsAdapter(@NonNull Context context, @NonNull List<UsageStats> objects, DataBaseHelper db, String ntr) {
         super(context, R.layout.row_layout, objects);
         DataBase=db;
