@@ -75,8 +75,7 @@ public class StatsAdapter extends ArrayAdapter<UsageStats> {
         }
 
 
-        /*colored dot reporting time usage status*/
-        Drawable dot=null;
+        /*a simple colored dot reporting time usage status*/
         ImageView dotView=(ImageView)rowView.findViewById(R.id.app_dot);
         dotView.setImageResource(R.drawable.dot_green);
 

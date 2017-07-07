@@ -222,7 +222,9 @@ public class MainActivity extends AppCompatActivity {
         //rendering apps stats list
         renderApps();
 
-
+        //starts a service for monitoring current apps usage
+        Intent monitorIntent = new Intent(getApplicationContext(), Monitor.class);
+        getApplicationContext().startService(monitorIntent);
     }
 
     @Override
@@ -234,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        db.close();
+        //db.close();
     }
 }
 
